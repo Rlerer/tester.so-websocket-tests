@@ -1,0 +1,8 @@
+allure-pytest==2.9.45
+allure-python-commons==2.9.45
+Flask==2.2.3
+pytest==7.2.2
+websocket_client==1.5.1
+Faker==12.3.3
+
+
