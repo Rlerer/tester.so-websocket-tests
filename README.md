@@ -1,8 +1,7 @@
-tester.so-websocket-tests
-To start the application in a container run: sh start_docker_container.sh
+# tester.so-websocket-tests
 
-To run the tests use: pytest
+Команды для запуска приложения в контейнере и тестов:
 
-Sorry, no Dockerization for now :(
-
-To generate test report use: allure serve ./allure-results
+- Поднять приложение в контейнере: `sh start_docker_container.sh`
+- Запустить тесты: `pytest` *(Мне тоже грусто, но на докеризации не хватило времени :( )*
+- Отчет о тестах: `allure serve ./allure-results`
