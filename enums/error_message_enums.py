@@ -6,6 +6,7 @@ class ReasonErrorMessages(Enum):
     KEY_SURNAME_NOT_FOUND = "[json.exception.out_of_range.403] key 'surname' not found"
     KEY_PHONE_NOT_FOUND = "[json.exception.out_of_range.403] key 'phone' not found"
     KEY_AGE_NOT_FOUND = "[json.exception.out_of_range.403] key 'age' not found"
+    MUST_BE_NUMBER_NOT_STRING = "[json.exception.type_error.302] type must be number, but is string"
 
     # "reason": "[json.exception.out_of_range.403] key 'age' not found",
     # "reason": "[json.exception.out_of_range.403] key 'name' not found"

@@ -4,7 +4,7 @@ import json
 from configuration import SERVICE_URL
 from models.user_data import UserDataGenerator
 from models.responce_data import ResponseData
-from faker import Faker
+
 
 
 def pytest_configure(config):
@@ -23,13 +23,9 @@ def pytest_configure(config):
 
 
 @pytest.fixture
-def static_surname():
-    return Faker().last_name()
-
-
-@pytest.fixture
 def ws_connection(autouse=True):
     ws = websocket.create_connection(SERVICE_URL)
+    ws.settimeout(2)
     yield ws
     ws.close()
 
@@ -40,7 +36,8 @@ def expected_status(request):
 
 @pytest.fixture
 def expected_reason(request):
-    return request.param
+    if hasattr(request, 'param'):
+        return request.param
 
 @pytest.fixture
 def parse_response():
@@ -65,6 +62,10 @@ def user_data(request):
     else:
         return UserDataGenerator().data
 
+@pytest.fixture
+def extra_field(request):
+    return request.param
+
 
 @pytest.fixture
 def check_response(expected_status, method):
@@ -79,11 +80,10 @@ def check_response(expected_status, method):
 
 
 @pytest.fixture
-def add_user(ws_connection, delete_user,user_data):
+def add_user(ws_connection, delete_user, user_data):
     def _add_user(user_data):
         # отправка запроса с данными пользователя
         request = {
-            # "id": "sfda-11231-123-adfa",
             "method": "add",
             **user_data
         }
@@ -92,40 +92,18 @@ def add_user(ws_connection, delete_user,user_data):
     yield _add_user
 
     # teardown
-    delete_user({"phone": user_data["phone"]}, "success")
-
-# yield
-        # if user_data["status"] == "success":
-        #     delete_user(user_data, "success")
+    if "phone" in user_data:
+        delete_user({"phone": user_data["phone"]})
 
 
-####            RABOCHEE GOVNO
-# @pytest.fixture
-# def delete_user(ws_connection):
-#     def _delete_user(user_data, expected_status):
-#         # отправка запроса с данными пользователя
-#         request = {
-#             "id": "123412-adf-13213",
-#             "method": "delete",
-#             **user_data
-#         }
-#         ws_connection.send(json.dumps(request))
-#
-#         # проверка статуса
-#         response = ws_connection.recv()
-#         assert json.loads(response)["status"] == expected_status
-#         assert json.loads(response)["method"] == "delete"
-#         assert json.loads(response)["id"] == "123412-adf-13213"
-#
-#     return _delete_user
+
 
 
 @pytest.fixture
 def delete_user(ws_connection):
-    def _delete_user(user_data, expected_status):
+    def _delete_user(user_data):
         # отправка запроса с данными пользователя
         request = {
-            "id": "123412-adf-13213",
             "method": "delete",
             **user_data
         }
@@ -135,12 +113,6 @@ def delete_user(ws_connection):
 
 
 @pytest.fixture
-# select
-# Получить из базы одного (по номеру телефона) или несколько юзеров (по имени или фамилии).
-# Можно выбирать по телефону (он уникален, один юзер), либо по фамилии или имени (по отдельности, все юзеры которые совпадут).
-#  id: string, идентификатор запроса
-#  method: select
-# name | phone | surname: string, Один из критериев поиска. Должен отдавать всех пользователей соотвествующих критерию.
 def select_user(ws_connection):
     def _select_user(user_data):
         # отправка запроса с данными пользователя
@@ -158,3 +130,22 @@ def select_user(ws_connection):
         # assert json.loads(response)["id"] == "123412-adf-13213"
 
     return _select_user
+
+@pytest.fixture
+def update_user(ws_connection):
+    def _update_user(user_data):
+        # отправка запроса с данными пользователя
+        request = {
+            "id": "123412-adf-13213",
+            "method": "update",
+            **user_data
+        }
+        ws_connection.send(json.dumps(request))
+
+        # проверка статуса
+        # response = ws_connection.recv()
+        # assert json.loads(response)["status"] == expected_status
+        # assert json.loads(response)["method"] == "select"
+        # assert json.loads(response)["id"] == "123412-adf-13213"
+
+    return _update_user

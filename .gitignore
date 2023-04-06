@@ -132,3 +132,13 @@ dmypy.json
 .allure
 allure-results
 allure-report
+
+# IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+#get-pip
+get-pip.py
